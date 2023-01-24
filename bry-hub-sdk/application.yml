@@ -1,0 +1,253 @@
+#########################################################################
+################# Arquivo de configuração do BRyHUB-SDK #################
+#########################################################################
+
+# Configurações gerais da aplicação
+#
+# Altere somente se for necessário
+#
+# server.port: define o número da porta da aplicação
+# server.tomcat.max-http-form-post-size: define o tamanho máximo da requisição
+#
+# Para habilitar HTTPS, basta configurar seu certificado nas configurações SSL:
+#
+# server.ssl.enabled: define se o HTTPS deve ser ativado
+# server.ssl.key-alias: O alias sob o qual a chave é armazenada no keystore
+# server.ssl.key-store: O caminho até a keystore. 
+# server.ssl.key-store-password: A senha da keystore.
+# server.ssl.key-store-type: Define o tipo de keystore. Deve ser fornecido um tipo JKS ou PKCS12.
+
+server:
+  port: 8081
+  tomcat:
+    max-http-form-post-size: 104857600
+  ssl:
+    enabled: false
+    key-alias: ""
+    key-store: ""
+    key-store-password:
+    key-store-type:
+
+# Configuração do conector AJP (entre tomcat e apache).
+#
+# Altere somente se for necessário e sob orientação do suporte da BRy.
+#
+# tomcat.ajp.enabled: Define se o conector AJP deve ser habilitado.
+# tomcat.ajp.port: Porta do conector AJP.
+
+tomcat:
+  ajp:
+    enabled: false
+    port: 8011
+
+#Configuraçãoes do spring boot
+#
+# Altere somente se for necessário
+#
+# spring.servlet.multipart.max-file-size: tamanho máximo de arquivo enviado em multipart
+# spring.servlet.multipart.max-request-size: tamanho máximo da requisição multipart
+
+spring:
+  application:
+    name: hub-sdk
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+# URL para acesso ao BRy KMS
+#
+# Essa configuração define a URL para acesso a certificados na nuvem. Não deve ser alterada
+
+kms:
+  url: https://kms.bry.com.br/kms/rest/v1
+  compartimentos:
+    vinculados: true
+
+# Configuração do local onde será armazenado os arquivos de log.
+# path: caminho até a pasta em que será salvo
+# file: nome do arquivo de log
+#
+# Diariamente, os arquivos de log do dia anterior são movidos para uma pasta "arquivos" interna à pasta definida na váriavel "path". 
+# O arquivo do dia atual fica sempre na pasta definida em "path" com o nome definido em "file"
+#
+# logging.graylog.servidores.*: permite adicionar servidores de logs. Há suporte para graylog e syslog e até três hosts.
+#
+# Caso não possua graylog ou syslog, mantenha os valores em branco.
+
+logging:
+  level:
+    br.com.bry.hub: info
+    org: error
+  file:
+    name: hub-sdk
+    path:
+  graylog:
+    # Lista de configurações servidores para envio de logs.
+    servidores:
+      - host: 
+        port: 
+        facility: 
+      - host:
+        port:
+        facility:
+      - host:
+        port:
+        facility:
+
+# Configuração do serviço de carimbo do tempo
+#
+# Caso deseje realizar assinaturas com carimbo do tempo, é necessário configurar os parâmetros abaixo.
+#
+# url: A URL do serviço de carimbo. Caso deseje informar uma porta, deve ser informado junto a URL. No caso de serviços de carimbo da BRy, não é necessário definir porta.
+# Ex:
+#   url: https://act.bry.com.br
+#
+# Caso queira configurar uma URL de contingência, faça a separação por ","
+# Ex:
+#   url: https://act.bry.com.br, http://act-hom.bry.com.br
+#
+# Alguns serviços necessitam de credencial para acesso, para informa-las basta atribuir aos parametros 'login' e 'senha'.
+#
+# login: Credencial de login de acesso ao serviço de carimbo.
+# senha: A senha do usuário no serviço de carimbo.
+#
+# Os atributos login e senha devem ter o mesmo número de elementos que o parâmetro "url", sendo cada login e senha respectivos a uma URL.
+# Ex:
+#   login: 07633467940, 08846012234
+#   senha: password, password1321
+#
+# politicaRequisicao: O número da politica utilizada no serviço de carimbo. Para ambiente PROD, a política deve ser 2.16.76.1.6.6. Demais ambientes, informar a política 1.3.6.1.4.1.14975.2.1.0
+#
+# O atributo politicaRequisicao deve ter o mesmo número de elementos que o parâmetro "url",
+# sendo cada política respectiva a uma URL.
+# Ex:
+#   politicaRequisicao: 2.16.76.1.6.6, 1.3.6.1.4.1.14975.2.1.0
+#
+# probe: Endereço completo do probe da carimbadora. Para a ACT da BRy, o endereço é https://act.bry.com.br:8443/probe/tsr.
+# O atributo probe deve ter o mesmo número de elementos que o parâmetro "url", sendo cada probe respectivo a uma URL.
+# Ex:
+#   probe: https://act.bry.com.br:8443/probe/tsr, https://act-hom.bry.com.br:8443/probe/tsr
+
+pdde:
+  url: 
+  login:
+  senha:
+  politicaRequisicao:
+  timeout: 3500
+  probe: 
+
+# Configuração refente a possibilidade de assinar utilizando certificado em disco.
+#
+# A variável "signatario" é um alias para o certificado. Esse mesmo valor deve ser informado no corpo da requisição para encontrar o certificado correto.
+# A variável "diretorio" deve ser preenchida com o caminho completo até o arquivo.
+# Ex:
+#   signatario: 'alias_teste'
+#   diretorio: C:\\hub\\teste.pfx
+#
+# É possível configurar mais de um arquivo, basta separar cada arquivo com um "-".
+# Ex:
+# certificados:
+#   -
+#       signatario:
+#       diretorio:
+#   -
+#       signatario:
+#       diretorio:
+#
+# No corpo da requisição deve ser informado o valor definido na variável "signatario".
+#
+# O valor da variável "signatario" no corpo da requisição também é necessário e utilizado no caso em que mais de um certificado foi configurado.
+# O certificado desejado será definido pelo valor de signatario definido no corpo da requisição. Ou seja, é necesário que o signatario definido neste arquivo e o signatario definido no corpo da requisição sejam iguais.
+
+pkcs12:
+  certificados:
+    - signatario:
+      diretorio:
+    - signatario:
+      diretorio:
+
+# Configuração referente à licença do BRy-HUB    
+#
+# As variáveis "cms", "pdf" e "xml" devem ser preenchidas com os valores enviados. Caso não possua algum valor, deixe em branco.
+# Ex: 
+#   cms: abcdefg
+#   pdf: 
+#   xml: 
+
+license:
+  cms:
+  pdf: 
+  xml:
+
+# Configuração referente às caches    
+#
+# Estes valores só são utilizados em casos de assinar (qualquer padrão) via inicializar/finalizar OU assinar um PDF que retorna link para download.
+# Não recomendamos a sua alteração, apenas em casos específicos em que seja necessário.
+#
+# A variável "limiteDownload" se refere ao tempo em que um arquivo PDF assinado estará disponível para download via link. 
+#
+# A variável "limiteContexto" informa o tempo em que o contexto de inicialização ficará em cache, para ser obtido novamente no momento da finalização.
+# Ou seja, é o tempo que leva para assinar todo o lote com a chave privada.
+#
+# Os valores devem ser configurados em número e a unidade de tempo é sempre SEGUNDOS.
+# Ex: 
+#   limiteDownload: 15
+#   limiteContexto: 30
+
+cache:
+  limiteDownload: 15
+  limiteContexto: 30
+
+#####################################################################################
+# Demais configuraçõs abaixo não devem ser alteradas sem orientação do suporte da BRy.
+
+app:
+  name: BRyHUB-SDK
+  version: 1.6.2
+
+icp:
+  diretorio:
+  politicasDeAssinatura:
+    - perfil: ADRB_2_2
+      url: http://politicas.icpbrasil.gov.br/PA_AD_RB_v2_2.der
+      arquivo: PA_AD_RB_v2_2.der
+    - perfil: ADRT_2_2
+      url: http://politicas.icpbrasil.gov.br/PA_AD_RT_v2_2.der
+      arquivo: PA_AD_RT_v2_2.der
+    - perfil: ADRB
+      url: http://politicas.icpbrasil.gov.br/PA_AD_RB_v2_3.der
+      arquivo: PA_AD_RB_v2_3.der
+    - perfil: ADRT
+      url: http://politicas.icpbrasil.gov.br/PA_AD_RT_v2_3.der
+      arquivo: PA_AD_RT_v2_3.der
+
+hub:
+  pades:
+    politica:
+      diretorio:
+      adrb:
+        url: http://politicas.icpbrasil.gov.br/PA_PAdES_AD_RB_v1_1.der
+        arquivo: PA_PAdES_AD_RB_v1_1.der
+      adrt:
+        url: http://politicas.icpbrasil.gov.br/PA_PAdES_AD_RT_v1_1.der
+        arquivo: PA_PAdES_AD_RT_v1_1.der
+      adrc:
+        url: http://politicas.icpbrasil.gov.br/PA_PAdES_AD_RC_v1_2.der
+        arquivo: PA_PAdES_AD_RC_v1_2.der
+      adra:
+        url: http://politicas.icpbrasil.gov.br/PA_PAdES_AD_RA_v1_2.der
+        arquivo: PA_PAdES_AD_RA_v1_2.der
+  xades:
+    politica:
+      diretorio:
+      adrb:
+        url: http://politicas.icpbrasil.gov.br/PA_AD_RB_v2_4.xml
+        arquivo: PA_AD_RB_v2_4.xml
+      adrt:
+        url: http://politicas.icpbrasil.gov.br/PA_AD_RT_v2_4.xml
+        arquivo: PA_AD_RT_v2_4.xml
